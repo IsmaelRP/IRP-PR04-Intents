@@ -408,14 +408,12 @@ public class MainActivityTest {
     public void shouldAvatarSendIntent() {
         onView(withId(R.id.imgAvatar)).perform(click());
         // Check sending intent
-        intended(allOf(hasComponent(AvatarActivity.class.getName()), hasExtra("EXTRA_AVATAR",
-                Database.getInstance().queryAvatar(1))));
+        intended(allOf(hasComponent(AvatarActivity.class.getName()), hasExtra("EXTRA_AVATAR", Database.getInstance().queryAvatar(1))));
         // Perform click on Avatar activity to send result and finish.
         onView(withId(R.id.imgAvatar2)).perform(click());
         // Check result set to views.
         onView(withId(R.id.imgAvatar)).check(matches(withTagValue(equalTo(R.drawable.cat2))));
-        onView(withId(R.id.lblAvatar)).check(
-                matches(withText(testRule.getActivity().getString(R.string.avatar2_name))));
+        onView(withId(R.id.lblAvatar)).check(matches(withText(testRule.getActivity().getString(R.string.avatar2_name))));
     }
 
 }
