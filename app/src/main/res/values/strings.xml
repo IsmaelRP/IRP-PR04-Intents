@@ -42,4 +42,5 @@
     <string name="imgAvatar4_descr">Image of Kitty, the cat</string>
     <string name="imgAvatar5_descr">Image of Felix, the cat</string>
     <string name="imgAvatar6_descr">Image of Nina, the cat</string>
+    <string name="error_web">You need a browser App</string>
 </resources>

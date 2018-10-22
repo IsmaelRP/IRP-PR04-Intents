@@ -1,5 +1,6 @@
 package es.iessaladillo.pedrojoya.pr04.ui.main;
 
+import android.app.SearchManager;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.graphics.Typeface;
@@ -186,13 +187,19 @@ public class MainActivity extends AppCompatActivity {
         String web = txtWeb.getText().toString();
 
         if (!isWrongWeb()){
-            intent = new Intent(Intent.ACTION_VIEW);
-            intent.setData(Uri.parse(web));
+            if(web.substring(0,8).matches("https://") || web.substring(0,7).matches("http://")){
+                intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse(web));
+            }else{
+                intent = new Intent(Intent.ACTION_WEB_SEARCH);
+                intent.putExtra(SearchManager.QUERY, web);
+            }
+
             try {
                 startActivity(intent);
             } catch (ActivityNotFoundException e) {
                 KeyboardUtils.hideSoftKeyboard(this);
-                SnackbarUtils.snackbar(imgAddress, getString(R.string.error_address), Snackbar.LENGTH_SHORT);
+                SnackbarUtils.snackbar(imgWeb, getString(R.string.error_web), Snackbar.LENGTH_SHORT);
             }
         }
     }
