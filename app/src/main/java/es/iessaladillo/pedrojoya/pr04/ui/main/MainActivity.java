@@ -17,6 +17,8 @@ import android.widget.TextView;
 
 import com.google.android.material.snackbar.Snackbar;
 
+import androidx.annotation.AnyRes;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import es.iessaladillo.pedrojoya.pr04.R;
@@ -67,13 +69,12 @@ public class MainActivity extends AppCompatActivity {
         avatar = database.queryAvatar(1);
 
         imgAvatar = ActivityCompat.requireViewById(this, R.id.imgAvatar);
-        imgAvatar.setImageResource(database.getDefaultAvatar().getImageResId());
-        imgAvatar.setTag(database.getDefaultAvatar().getImageResId());
-        imgAvatar.setOnClickListener(v -> AvatarActivity.startForResult(MainActivity.this, RC_AVATAR, avatar));
+        showAvatar(database.getDefaultAvatar().getImageResId());
+        imgAvatar.setOnClickListener(v -> startAvatarActivity());
 
         lblAvatar = ActivityCompat.requireViewById(this, R.id.lblAvatar);
-        lblAvatar.setText(database.getDefaultAvatar().getName());
-        lblAvatar.setOnClickListener(v -> AvatarActivity.startForResult(MainActivity.this, RC_AVATAR, avatar));
+        showLabel(database.getDefaultAvatar().getName());
+        lblAvatar.setOnClickListener(v -> startAvatarActivity());
 
         lblName = ActivityCompat.requireViewById(this, R.id.lblName);
         txtName = ActivityCompat.requireViewById(this, R.id.txtName);
@@ -118,6 +119,14 @@ public class MainActivity extends AppCompatActivity {
         imgWeb.setOnClickListener(v -> searchWeb());
     }
 
+    private void showLabel(String text) {
+        lblAvatar.setText(text);
+    }
+
+    private void startAvatarActivity() {
+        AvatarActivity.startForResult(MainActivity.this, RC_AVATAR, avatar);
+    }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -125,18 +134,22 @@ public class MainActivity extends AppCompatActivity {
             if (data != null && data.hasExtra(AvatarActivity.EXTRA_AVATAR)) {
                 avatar = data.getParcelableExtra(EXTRA_AVATAR);
 
-                imgAvatar.setImageResource(avatar.getImageResId());
-                imgAvatar.setTag(avatar.getImageResId());
-                lblAvatar.setText(avatar.getName());
+                showAvatar(avatar.getImageResId());
+                showLabel(avatar.getName());
             }
         }
     }
 
-    private void sendEmail(){
+    private void showAvatar(@AnyRes int resId) {
+        imgAvatar.setImageResource(resId);
+        imgAvatar.setTag(resId);
+    }
+
+    private void sendEmail() {
         Intent intent;
         String address = txtEmail.getText().toString();
 
-        if (!isWrongEmail()){
+        if (!isWrongEmail()) {
             intent = new Intent(Intent.ACTION_SENDTO);
             intent.setData(Uri.parse("mailto:" + address));
             intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.email_subject));
@@ -147,14 +160,16 @@ public class MainActivity extends AppCompatActivity {
                 KeyboardUtils.hideSoftKeyboard(this);
                 SnackbarUtils.snackbar(imgEmail, getString(R.string.error_email), Snackbar.LENGTH_SHORT);
             }
+        } else {
+            setErrorEmail(isWrongEmail());
         }
     }
 
-    private void dial(){
+    private void dial() {
         Intent intent;
         String phoneNumber = txtPhoneNumber.getText().toString();
 
-        if (!isWrongPhonenumber()){
+        if (!isWrongPhonenumber()) {
             intent = new Intent(Intent.ACTION_DIAL);
             intent.setData(Uri.parse("tel:" + phoneNumber));
             try {
@@ -163,14 +178,16 @@ public class MainActivity extends AppCompatActivity {
                 KeyboardUtils.hideSoftKeyboard(this);
                 SnackbarUtils.snackbar(imgPhonenumber, getString(R.string.error_phonenumber), Snackbar.LENGTH_SHORT);
             }
+        } else {
+            setErrorPhonenumber(isWrongPhonenumber());
         }
     }
 
-    private void maps(){
+    private void maps() {
         Intent intent;
         String address = txtAddress.getText().toString();
 
-        if (!isWrongAddress()){
+        if (!isWrongAddress()) {
             intent = new Intent(Intent.ACTION_VIEW);
             intent.setData(Uri.parse("geo:0,0?q=" + address));
             try {
@@ -179,18 +196,20 @@ public class MainActivity extends AppCompatActivity {
                 KeyboardUtils.hideSoftKeyboard(this);
                 SnackbarUtils.snackbar(imgAddress, getString(R.string.error_address), Snackbar.LENGTH_SHORT);
             }
+        } else {
+            setErrorAddress(isWrongAddress());
         }
     }
 
-    private void searchWeb(){
+    private void searchWeb() {
         Intent intent;
         String web = txtWeb.getText().toString();
 
-        if (!isWrongWeb()){
-            if(web.substring(0,8).matches("https://") || web.substring(0,7).matches("http://")){
+        if (!isWrongWeb()) {
+            if (web.substring(0, 8).matches("https://") || web.substring(0, 7).matches("http://")) {
                 intent = new Intent(Intent.ACTION_VIEW);
                 intent.setData(Uri.parse(web));
-            }else{
+            } else {
                 intent = new Intent(Intent.ACTION_WEB_SEARCH);
                 intent.putExtra(SearchManager.QUERY, web);
             }
@@ -201,6 +220,8 @@ public class MainActivity extends AppCompatActivity {
                 KeyboardUtils.hideSoftKeyboard(this);
                 SnackbarUtils.snackbar(imgWeb, getString(R.string.error_web), Snackbar.LENGTH_SHORT);
             }
+        } else {
+            setErrorWeb(isWrongWeb());
         }
     }
 
@@ -230,138 +251,161 @@ public class MainActivity extends AppCompatActivity {
         public void afterTextChanged(Editable editable) {
             switch (view.getId()) {
                 case R.id.txtName:
-                    isWrongName();
+                    setErrorName(isWrongName());
                     break;
                 case R.id.txtEmail:
-                    isWrongEmail();
+                    setErrorEmail(isWrongEmail());
                     break;
                 case R.id.txtPhonenumber:
-                    isWrongPhonenumber();
+                    setErrorPhonenumber(isWrongPhonenumber());
                     break;
                 case R.id.txtAddress:
-                    isWrongAddress();
+                    setErrorAddress(isWrongAddress());
                     break;
                 case R.id.txtWeb:
-                    isWrongWeb();
+                    setErrorWeb(isWrongWeb());
                     break;
             }
         }
     }
 
     private boolean isWrongName() {
-        boolean isWrong;
+        boolean isWrong = false;
         if (txtName.getText().toString().length() <= 0) {
-            txtName.setError((getString(R.string.main_invalid_data)));
-            lblName.setTextColor(getResources().getColor(R.color.colorError));
-            lblName.setEnabled(false);
             isWrong = true;
-        } else {
-            txtName.setError(null);
-            lblName.setTextColor(getResources().getColor(R.color.colorBlack));
-            lblName.setEnabled(true);
-            isWrong = false;
         }
         return isWrong;
+    }
+
+    private void setErrorName(boolean wrong) {
+        if (wrong) {
+            txtName.setError((getString(R.string.main_invalid_data)));
+            lblName.setEnabled(false);
+        } else {
+            txtName.setError(null);
+            lblName.setEnabled(true);
+        }
     }
 
     private boolean isWrongEmail() {
-        boolean isWrong;
+        boolean isWrong = false;
         if (!ValidationUtils.isValidEmail(txtEmail.getText().toString())) {
+            isWrong = true;
+        }
+        return isWrong;
+    }
+
+    private void setErrorEmail(boolean wrong) {
+        if (wrong) {
             txtEmail.setError((getString(R.string.main_invalid_data)));
             imgEmail.setEnabled(false);
-            lblEmail.setTextColor(getResources().getColor(R.color.colorError));
             lblEmail.setEnabled(false);
-            isWrong = true;
         } else {
             txtAddress.setError(null);
             imgEmail.setEnabled(true);
-            lblEmail.setTextColor(getResources().getColor(R.color.colorBlack));
             lblEmail.setEnabled(true);
-            isWrong = false;
         }
-        return isWrong;
     }
 
     private boolean isWrongPhonenumber() {
-        boolean isWrong;
+        boolean isWrong = false;
         if (!ValidationUtils.isValidPhone(txtPhoneNumber.getText().toString())) {
+            isWrong = true;
+        }
+        return isWrong;
+    }
+
+    private void setErrorPhonenumber(boolean wrong) {
+        if (wrong) {
             txtPhoneNumber.setError((getString(R.string.main_invalid_data)));
             imgPhonenumber.setEnabled(false);
-            lblPhoneNumber.setTextColor(getResources().getColor(R.color.colorError));
             lblPhoneNumber.setEnabled(false);
-            isWrong = true;
         } else {
             txtPhoneNumber.setError(null);
             imgPhonenumber.setEnabled(true);
-            lblPhoneNumber.setTextColor(getResources().getColor(R.color.colorBlack));
             lblPhoneNumber.setEnabled(true);
-            isWrong = false;
         }
-        return isWrong;
     }
 
     private boolean isWrongAddress() {
-        boolean isWrong;
+        boolean isWrong = false;
         if (txtAddress.getText().toString().length() <= 0) {
+            isWrong = true;
+        }
+        return isWrong;
+    }
+
+    private void setErrorAddress(boolean wrong) {
+        if (wrong) {
             txtAddress.setError((getString(R.string.main_invalid_data)));
             imgAddress.setEnabled(false);
-            lblAddress.setTextColor(getResources().getColor(R.color.colorError));
             lblAddress.setEnabled(false);
-            isWrong = true;
         } else {
             txtAddress.setError(null);
             imgAddress.setEnabled(true);
-            lblAddress.setTextColor(getResources().getColor(R.color.colorBlack));
             lblAddress.setEnabled(true);
-            isWrong = false;
         }
-        return isWrong;
     }
 
     private boolean isWrongWeb() {
-        boolean isWrong;
+        boolean isWrong = false;
         if (!ValidationUtils.isValidUrl(txtWeb.getText().toString())) {
-            txtWeb.setError((getString(R.string.main_invalid_data)));
-            imgWeb.setEnabled(false);
-            lblWeb.setTextColor(getResources().getColor(R.color.colorError));
-            lblWeb.setEnabled(false);
             isWrong = true;
-        } else {
-            txtWeb.setError(null);
-            imgWeb.setEnabled(true);
-            lblWeb.setTextColor(getResources().getColor(R.color.colorBlack));
-            lblWeb.setEnabled(true);
-            isWrong = false;
         }
         return isWrong;
     }
 
+    private void setErrorWeb(boolean wrong) {
+        if (wrong) {
+            txtWeb.setError((getString(R.string.main_invalid_data)));
+            imgWeb.setEnabled(false);
+            lblWeb.setEnabled(false);
+        } else {
+            txtWeb.setError(null);
+            imgWeb.setEnabled(true);
+            lblWeb.setEnabled(true);
+        }
+    }
+
     private void save() {
-        boolean flag = true;
+        boolean valid;
         KeyboardUtils.hideSoftKeyboard(this);
 
-        if (isWrongName()) {
-            flag = false;
-        }
-        if (isWrongEmail()) {
-            flag = false;
-        }
-        if (isWrongPhonenumber()) {
-            flag = false;
-        }
-        if (isWrongAddress()) {
-            flag = false;
-        }
+        valid = isFormValid();
 
-        if (isWrongWeb()) {
-            flag = false;
-        }
-
-        if (flag) {
+        if (valid) {
             SnackbarUtils.snackbar(imgAvatar, getString(R.string.main_saved_succesfully), Snackbar.LENGTH_SHORT);
         } else {
             SnackbarUtils.snackbar(imgAvatar, getString(R.string.main_error_saving), Snackbar.LENGTH_SHORT);
         }
+    }
+
+    private boolean isFormValid() {
+        boolean valid = true;
+
+        if (isWrongName()) {
+            valid = false;
+            setErrorName(isWrongName());
+        }
+        if (isWrongEmail()) {
+            valid = false;
+            setErrorEmail(isWrongEmail());
+        }
+        if (isWrongPhonenumber()) {
+            valid = false;
+            setErrorPhonenumber(isWrongPhonenumber());
+        }
+        if (isWrongAddress()) {
+            valid = false;
+            setErrorAddress(isWrongAddress());
+        }
+
+        if (isWrongWeb()) {
+            valid = false;
+            setErrorWeb(isWrongWeb());
+        }
+
+        return valid;
     }
 
     // DO NOT TOUCH

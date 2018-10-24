@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import es.iessaladillo.pedrojoya.pr04.R;
@@ -28,20 +29,13 @@ public class AvatarActivity extends AppCompatActivity {
     private ImageView imgAvatar5;
     private ImageView imgAvatar6;
 
-    private TextView lblAvatar1;
-    private TextView lblAvatar2;
-    private TextView lblAvatar3;
-    private TextView lblAvatar4;
-    private TextView lblAvatar5;
-    private TextView lblAvatar6;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_avatar);
         getIntentData();
         initViews();
-        switchCats2(avatar.getImageResId());
+        selectCatSelected(avatar.getImageResId());
     }
 
     private void initViews() {
@@ -54,12 +48,12 @@ public class AvatarActivity extends AppCompatActivity {
         imgAvatar5 = ActivityCompat.requireViewById(this, R.id.imgAvatar5);
         imgAvatar6 = ActivityCompat.requireViewById(this, R.id.imgAvatar6);
 
-        lblAvatar1 = ActivityCompat.requireViewById(this, R.id.lblAvatar1);
-        lblAvatar2 = ActivityCompat.requireViewById(this, R.id.lblAvatar2);
-        lblAvatar3 = ActivityCompat.requireViewById(this, R.id.lblAvatar3);
-        lblAvatar4 = ActivityCompat.requireViewById(this, R.id.lblAvatar4);
-        lblAvatar5 = ActivityCompat.requireViewById(this, R.id.lblAvatar5);
-        lblAvatar6 = ActivityCompat.requireViewById(this, R.id.lblAvatar6);
+        TextView lblAvatar1 = ActivityCompat.requireViewById(this, R.id.lblAvatar1);
+        TextView lblAvatar2 = ActivityCompat.requireViewById(this, R.id.lblAvatar2);
+        TextView lblAvatar3 = ActivityCompat.requireViewById(this, R.id.lblAvatar3);
+        TextView lblAvatar4 = ActivityCompat.requireViewById(this, R.id.lblAvatar4);
+        TextView lblAvatar5 = ActivityCompat.requireViewById(this, R.id.lblAvatar5);
+        TextView lblAvatar6 = ActivityCompat.requireViewById(this, R.id.lblAvatar6);
 
         imgAvatar1.setOnClickListener(v -> configureIntent(imgAvatar1));
         imgAvatar2.setOnClickListener(v -> configureIntent(imgAvatar2));
@@ -103,11 +97,11 @@ public class AvatarActivity extends AppCompatActivity {
     }
 
     public void onClick(View v) {
-        switchCats1(v.getId());
+        setAvatar(v.getId());
         sendIntent(avatar);
     }
 
-    private void switchCats1(int id) {
+    private void setAvatar(int id) {
         switch (id) {
             case R.id.imgAvatar1:
                 avatar = database.queryAvatar(1);
@@ -130,7 +124,7 @@ public class AvatarActivity extends AppCompatActivity {
         }
     }
 
-    private void switchCats2(int id) {
+    private void selectCatSelected(int id) {
         Database database = Database.getInstance();
 
         if (id == database.queryAvatar(1).getImageResId()) {
@@ -177,7 +171,7 @@ public class AvatarActivity extends AppCompatActivity {
         }
     }
 
-    private void sendIntent(Avatar avatar) {
+    private void sendIntent(@NonNull Avatar avatar) {
         Intent result = new Intent();
         result.putExtra(EXTRA_AVATAR, avatar);
         setResult(RESULT_OK, result);
