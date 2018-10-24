@@ -18,8 +18,8 @@
 
     <TextView
         android:id="@+id/lblAvatar"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/lblAvatar_margin"
         android:layout_marginBottom="@dimen/lblAvatar_margin"
         android:padding="@dimen/lbl_txt_margin_padding"
