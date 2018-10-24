@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -27,6 +28,13 @@ public class AvatarActivity extends AppCompatActivity {
     private ImageView imgAvatar5;
     private ImageView imgAvatar6;
 
+    private TextView lblAvatar1;
+    private TextView lblAvatar2;
+    private TextView lblAvatar3;
+    private TextView lblAvatar4;
+    private TextView lblAvatar5;
+    private TextView lblAvatar6;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,12 +54,27 @@ public class AvatarActivity extends AppCompatActivity {
         imgAvatar5 = ActivityCompat.requireViewById(this, R.id.imgAvatar5);
         imgAvatar6 = ActivityCompat.requireViewById(this, R.id.imgAvatar6);
 
+        lblAvatar1 = ActivityCompat.requireViewById(this, R.id.lblAvatar1);
+        lblAvatar2 = ActivityCompat.requireViewById(this, R.id.lblAvatar2);
+        lblAvatar3 = ActivityCompat.requireViewById(this, R.id.lblAvatar3);
+        lblAvatar4 = ActivityCompat.requireViewById(this, R.id.lblAvatar4);
+        lblAvatar5 = ActivityCompat.requireViewById(this, R.id.lblAvatar5);
+        lblAvatar6 = ActivityCompat.requireViewById(this, R.id.lblAvatar6);
+
         imgAvatar1.setOnClickListener(v -> configureIntent(imgAvatar1));
         imgAvatar2.setOnClickListener(v -> configureIntent(imgAvatar2));
         imgAvatar3.setOnClickListener(v -> configureIntent(imgAvatar3));
         imgAvatar4.setOnClickListener(v -> configureIntent(imgAvatar4));
         imgAvatar5.setOnClickListener(v -> configureIntent(imgAvatar5));
         imgAvatar6.setOnClickListener(v -> configureIntent(imgAvatar6));
+
+        lblAvatar1.setOnClickListener(v -> configureIntent(imgAvatar1));
+        lblAvatar2.setOnClickListener(v -> configureIntent(imgAvatar2));
+        lblAvatar3.setOnClickListener(v -> configureIntent(imgAvatar3));
+        lblAvatar4.setOnClickListener(v -> configureIntent(imgAvatar4));
+        lblAvatar5.setOnClickListener(v -> configureIntent(imgAvatar5));
+        lblAvatar6.setOnClickListener(v -> configureIntent(imgAvatar6));
+
     }
 
     private void configureIntent(ImageView img) {
