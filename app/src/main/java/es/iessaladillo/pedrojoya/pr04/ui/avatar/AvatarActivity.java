@@ -55,6 +55,9 @@ public class AvatarActivity extends AppCompatActivity {
         TextView lblAvatar5 = ActivityCompat.requireViewById(this, R.id.lblAvatar5);
         TextView lblAvatar6 = ActivityCompat.requireViewById(this, R.id.lblAvatar6);
 
+        // ¿POR QUÉ NO PASAS DIRECTAMENTE A configureIntent el database.queryAvatar()
+        // CORRESPONDIENTE? DE ESTA MANERA EL MÉTODO configureIntent NO TENDRÍA QUE TENER
+        // EL SWITCH.
         imgAvatar1.setOnClickListener(v -> configureIntent(imgAvatar1));
         imgAvatar2.setOnClickListener(v -> configureIntent(imgAvatar2));
         imgAvatar3.setOnClickListener(v -> configureIntent(imgAvatar3));
@@ -96,6 +99,7 @@ public class AvatarActivity extends AppCompatActivity {
         sendIntent(avatar);
     }
 
+    // ¿ES ESTO CÓDIGO MUERTO QUE NO SE LLAMA DESDE NINGÚN LADO?
     public void onClick(View v) {
         setAvatar(v.getId());
         sendIntent(avatar);
@@ -123,6 +127,7 @@ public class AvatarActivity extends AppCompatActivity {
                 break;
         }
     }
+    // FIN CÓDIGO MUERTO
 
     private void selectCatSelected(int id) {
         Database database = Database.getInstance();
@@ -167,6 +172,7 @@ public class AvatarActivity extends AppCompatActivity {
         if (intent != null && intent.hasExtra(EXTRA_AVATAR)) {
             avatar = intent.getParcelableExtra(EXTRA_AVATAR);
         } else {
+            // MUY BIEN. ME GUSTA MUCHO !!!!
             throw new IllegalArgumentException("Activity cannot find extras " + EXTRA_AVATAR);
         }
     }

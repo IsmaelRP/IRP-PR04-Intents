@@ -18,7 +18,6 @@ import android.widget.TextView;
 import com.google.android.material.snackbar.Snackbar;
 
 import androidx.annotation.AnyRes;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import es.iessaladillo.pedrojoya.pr04.R;
@@ -32,6 +31,8 @@ import es.iessaladillo.pedrojoya.pr04.utils.ValidationUtils;
 @SuppressWarnings("WeakerAccess")
 public class MainActivity extends AppCompatActivity {
 
+    // YO NO DEFINIRÍA ESTÁ CONSTANTE AQUÍ. YA LA TIENES DEFINIDA EN AvatarActivity , A DONDE
+    // PERTENECE.
     public static final String EXTRA_AVATAR = "EXTRA_AVATAR";
     public static final int RC_AVATAR = 1;
     private Avatar avatar;
@@ -63,9 +64,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initViews();
+        if (savedInstanceState == null) {
+            txtName.requestFocus();
+        }
     }
 
     private void initViews() {
+        // MEJOR USA database.getDefaultAvatar().
         avatar = database.queryAvatar(1);
 
         imgAvatar = ActivityCompat.requireViewById(this, R.id.imgAvatar);
@@ -132,8 +137,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK && requestCode == RC_AVATAR) {
             if (data != null && data.hasExtra(AvatarActivity.EXTRA_AVATAR)) {
+                // YO USARÍA AvatarActivity.EXTRA_AVATAR Y ASÍ ME AHORRO DEFINIR LA CONSTANTE
+                // EN ESTA CLASE Y MANTENER EL MISMO VALOR EN AMBAS.
                 avatar = data.getParcelableExtra(EXTRA_AVATAR);
-
+                // YO HABRÍA HECHO AMBAS COSAS EN EL MISMO MÉTODO. AL FIN Y AL CABO MOSTRAR
+                // UN AVATAR ES MOSTRAR TANTO SU FOTO COMO SU NOMBRE.
                 showAvatar(avatar.getImageResId());
                 showLabel(avatar.getName());
             }
@@ -150,6 +158,8 @@ public class MainActivity extends AppCompatActivity {
         String address = txtEmail.getText().toString();
 
         if (!isWrongEmail()) {
+            // YO CREARÍA UN MÉTODO DE UTILIDAD ESTÁTICO EN ALGUNA CLASE DE UTILIDAD QUE PUDIERA
+            // REUTILIZAR EN OTROS PROYECTOS. ALGO ASÍ COMO newSendEMailIntent(...)
             intent = new Intent(Intent.ACTION_SENDTO);
             intent.setData(Uri.parse("mailto:" + address));
             intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.email_subject));
@@ -161,6 +171,7 @@ public class MainActivity extends AppCompatActivity {
                 SnackbarUtils.snackbar(imgEmail, getString(R.string.error_email), Snackbar.LENGTH_SHORT);
             }
         } else {
+            // MUY BIEN. ME GUSTA COMO LO HAS GESTIONADO.
             setErrorEmail(isWrongEmail());
         }
     }
@@ -206,10 +217,12 @@ public class MainActivity extends AppCompatActivity {
         String web = txtWeb.getText().toString();
 
         if (!isWrongWeb()) {
+            // USA MEJOR startsWith()
             if (web.substring(0, 8).matches("https://") || web.substring(0, 7).matches("http://")) {
                 intent = new Intent(Intent.ACTION_VIEW);
                 intent.setData(Uri.parse(web));
             } else {
+                // O TAMBIÉN PUEDES SIMPLEMENTE AÑADIRLE TU EL http
                 intent = new Intent(Intent.ACTION_WEB_SEARCH);
                 intent.putExtra(SearchManager.QUERY, web);
             }
@@ -226,6 +239,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    // YO LO HABRÍA LLAMADO txtToggleBold() . SWAP SIGNIFICA INTERCAMBIAR Y DA
+    // LA IMPRESIÓN DE QUE VA A RECIBIR DOS VALORES A INTERCAMBIAR. ¿?
     private void txtSwapBold(TextView txt) {
         if (txt.getTypeface().isBold()) {
             txt.setTypeface(Typeface.defaultFromStyle(Typeface.NORMAL));
@@ -295,6 +310,8 @@ public class MainActivity extends AppCompatActivity {
         return isWrong;
     }
 
+    // ¿POR QUÉ NO HACES UN MÉTODO ÚNICO QUE RECIBA EL txt, EL img, EL lbl Y EL wrong ?
+    // FÍJATE EN QUE TIENES VARIOS MÉTODOS PRÁCTICAMENTE IGUALES.
     private void setErrorEmail(boolean wrong) {
         if (wrong) {
             txtEmail.setError((getString(R.string.main_invalid_data)));
